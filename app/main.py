@@ -18,7 +18,7 @@ logger.setLevel(logging.INFO)
 
 load_dotenv()
 
-API_KEY = os.getenv('API_KEY_BYBIT')
+API_KEY = os.getenv('API_kEY_BYBIT')
 API_SECRET = os.getenv('API_SECRET_BYBIT')
 
 
@@ -668,10 +668,8 @@ async def process_pair(client, t_pair):
         If there is an error processing the pair.
     """
     try:
-        # Проверяем, идет ли сейчас торговля
-        async with trading_lock:
-            if is_trading:
-                return  # Если идет торговля, не начинаем новую
+        # Объявляем глобальную переменную в начале функции, до любого её использования
+        global is_trading
 
         prices_dict = await get_price_for_t_pair(client, t_pair)
         surface_dict = calc_triangular_arb_surface_rate(t_pair, prices_dict)
@@ -682,22 +680,22 @@ async def process_pair(client, t_pair):
             real_rate_arb = await get_depth_from_orderbook(client, surface_dict, taker_fee)
 
             if real_rate_arb:
-                # Устанавливаем флаг торговли
                 async with trading_lock:
-                    global is_trading
-                    is_trading = True
+                    if is_trading:
+                        return  # Если уже идет торговля, не начинаем новую
+                    is_trading = True  # Устанавливаем флаг торговли
 
                 logger.info(f"Arbitrage opportunity found for {t_pair['combined']}")
                 with open('trading_logs.txt', 'a') as f:
                     f.write(f"Arbitrage Opportunity: {real_rate_arb}\n")
-                
+
                 # Исполняем ордера
                 result = await open_market_orders(client, real_rate_arb)
-                
+
                 with open('trading_logs.txt', 'a') as f:
                     f.write(f"Swapping result: {result}\n\n")
 
-                # Сбрасываем флаг торговли после завершения
+                # Сбрасываем флаг после завершения торговли
                 async with trading_lock:
                     is_trading = False
 
