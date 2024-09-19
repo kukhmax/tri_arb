@@ -33,6 +33,7 @@
 
 
 # https://thegraph.com/hosted-service/subgraph/uniswap/uniswap-v3
+import os
 import requests
 import json
 import time
@@ -108,6 +109,7 @@ def retrieve_uniswap_information():
                 }
         }
     """
+    API_KEY_UNISWAP = os.getenv('API_kEY_UNISWAP')
     url = "https://gateway.thegraph.com/api/925607239f08322514396d6381dbe8f5/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV"
     headers = {
         "Content-Type": "application/json"

@@ -1,3 +1,4 @@
+import os
 import json
 import logging
 import sys
@@ -30,7 +31,8 @@ console.setFormatter(formatter)
 logging.getLogger().addHandler(console)
 
 # Подключение к Ethereum через Infura
-INFURA_URL = "https://mainnet.infura.io/v3/556177ea959e4d59ba6913fb898c06f7"
+INFURA_ID = os.getenv('INFURA_ID')
+INFURA_URL = F"https://mainnet.infura.io/v3/{INFURA_ID}"
 web3 = Web3(Web3.HTTPProvider(INFURA_URL))
 
 if not web3.is_connected():
@@ -414,7 +416,7 @@ if __name__ == "__main__":
 # import json
 
 # # Подключение к Infura (замените YOUR_INFURA_PROJECT_ID на свой)
-# infura_url = "https://mainnet.infura.io/v3/556177ea959e4d59ba6913fb898c06f7"
+# infura_url = "https://mainnet.infura.io/v3/556177ea959e4d59bafb898c06f7"
 # web3 = Web3(Web3.HTTPProvider(infura_url))
 
 # # ABI для контракта пула Uniswap V3. Это минимальное ABI, содержащее только нужные функции.
